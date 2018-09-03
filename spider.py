@@ -10,8 +10,14 @@ import pymongo
 
 client = pymongo.MongoClient(MONGO_URL)
 db = client[MONGO_DB]
+'''
+# selenium.common.exceptions.WebDriverException: Message: 'chromedriver' executable needs to be in PATH. Please see https://sites.google.com/a/chromium.org/chromedriver/home
+# 下载Chromedriver，然后解压到目录(目录可以自行决定)，然后将目录路径添加到调用参数中去,添加chromedriver路径
+'''
+#browser = webdriver.Chrome(r'C:/Program Files (x86)/Google/Chrome/Application/chromedriver.exe')
 
-browser = webdriver.PhantomJS(service_args=SERVICE_ARGS)
+browser = webdriver.PhantomJS(executable_path='C:/Program Files (x86)/Google/Chrome/Application/phantomjs.exe', service_args = SERVICE_ARGS)
+
 wait = WebDriverWait(browser, 10)
 
 browser.set_window_size(1400, 900)
@@ -69,6 +75,7 @@ def get_products():
         }
         print(product)
         save_to_mongo(product)
+        write_to_file(product)
 
 
 def save_to_mongo(result):
@@ -77,8 +84,14 @@ def save_to_mongo(result):
             print('存储到MONGODB成功', result)
     except Exception:
         print('存储到MONGODB失败', result)
+        
+        
+def write_to_file(result):
+    with open('result.txt', 'a', encoding='utf-8') as f:
+        f.write(json.dumps(result, ensure_ascii=False) + '\n')
+        f.close()
 
-
+        
 def main():
     try:
         total = search()
